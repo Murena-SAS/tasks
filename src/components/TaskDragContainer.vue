@@ -20,26 +20,28 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <template>
-	<draggable tag="ol"
-		:list="['']"
+	<Sortable tag="ol"
+		:list="sortedTasks"
 		:set-data="setDragData"
-		v-bind="{group: 'tasks', swapThreshold: 0.30, delay: 500, delayOnTouchOnly: true, touchStartThreshold: 3, disabled: disabled, filter: '.readOnly'}"
-		:move="onMove"
+		item-key="key"
+		:options="{group: 'tasks', swapThreshold: 0.30, delay: 500, delayOnTouchOnly: true, touchStartThreshold: 3, disabled: disabled, filter: '.readOnly'}"
+		@move="onMove"
 		@add="onAdd"
 		@end="onEnd">
-		<TaskBody v-for="task in sortedTasks"
-			:key="task.key"
-			:task="task"
-			:collection-string="collectionString" />
-	</draggable>
+		<template #item="{element}">
+			<TaskBody :task="element"
+				:collection-string="collectionString" />
+		</template>
+	</Sortable>
 </template>
 
 <script>
 import Task from '../models/task.js'
 import { sort } from '../store/storeHelper.js'
 
-import draggable from 'vuedraggable'
+import { Sortable } from 'sortablejs-vue3'
 import { mapGetters, mapActions, mapMutations } from 'vuex'
+import { defineAsyncComponent } from 'vue'
 
 export default {
 	name: 'TaskDragContainer',
@@ -47,14 +49,10 @@ export default {
 		/**
 		 * We asynchronously import here, because we have a circular dependency
 		 * between TaskDragContainer and TaskBody which otherwise cannot be resolved.
-		 * See https://vuejs.org/v2/guide/components-edge-cases.html#Circular-References-Between-Components
-		 *
-		 * We load it "eager", because the TaskBody will always be required.
-		 *
-		 * @return {object} The TaskBody component
+		 * See https://vuejs.org/guide/components/async.html#basic-usage
 		 */
-		TaskBody: () => import(/* webpackMode: "eager" */ './TaskBody.vue'),
-		draggable,
+		TaskBody: defineAsyncComponent(() => import('./TaskBody.vue')),
+		Sortable,
 	},
 	props: {
 		tasks: {
@@ -96,6 +94,7 @@ export default {
 		}),
 
 		setDragData: (dataTransfer) => {
+			console.debug('setDragData')
 			// We do nothing here, this just prevents
 			// vue.draggable from setting data on the
 			// dataTransfer object.
@@ -173,6 +172,7 @@ export default {
 		 * @param {object} $event The event which caused the drop
 		 */
 		onEnd($event) {
+			console.debug('end' + $event)
 			// Don't do anything if the tasks are not sorted but moved.
 			if ($event.to !== $event.from) {
 				return
@@ -193,6 +193,7 @@ export default {
 		 * @param {object} $event The event which caused the drop
 		 */
 		onAdd($event) {
+			console.debug('add' + $event)
 			let task
 			// The task to move
 			const taskAttribute = $event.item.attributes['task-id']
@@ -221,6 +222,7 @@ export default {
 		 * @return {boolean} If the drop is allowed
 		 */
 		onMove($event) {
+			console.debug('move' + $event)
 			// The task to move
 			const taskAttribute = $event.dragged.attributes['task-id']
 			if (taskAttribute) {

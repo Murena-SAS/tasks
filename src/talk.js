@@ -32,22 +32,14 @@ import TaskCreateDialog from './components/TaskCreateDialog.vue'
 import { buildSelector } from './helpers/selector.js'
 
 import { getRequestToken } from '@nextcloud/auth'
-import { translate as t, translatePlural as n } from '@nextcloud/l10n'
+import { translate as t } from '@nextcloud/l10n'
 import { generateUrl, generateFilePath } from '@nextcloud/router'
-
-import Vue from 'vue'
 
 // eslint-disable-next-line
 __webpack_nonce__ = btoa(getRequestToken())
 
 // eslint-disable-next-line
 __webpack_public_path__ = generateFilePath('tasks', '', 'js/')
-
-Vue.prototype.t = t
-Vue.prototype.n = n
-Vue.prototype.$OC = OC
-Vue.prototype.$OCA = OCA
-Vue.prototype.$appVersion = appVersion
 
 window.addEventListener('DOMContentLoaded', () => {
 	if (!window.OCA?.Talk?.registerMessageAction) {

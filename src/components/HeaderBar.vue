@@ -23,7 +23,7 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 	<div class="header">
 		<div v-if="$route.params.collectionId !== 'completed' && calendar && !calendar.readOnly"
 			class="header__input">
-			<NcTextField :value.sync="newTaskName"
+			<NcTextField v-model:value="newTaskName"
 				:label="placeholder"
 				autocomplete="off"
 				class="reactive"

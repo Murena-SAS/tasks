@@ -20,16 +20,16 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <template>
-	<NcAppSidebar :title="title"
+	<NcAppSidebar v-model:active="activeTab"
+		:title="title"
 		:title-editable="editingTitle"
 		:linkify-title="true"
 		:subtitle="subtitle"
 		:title-tooltip="title"
 		:subtitle-tooltip="subtitleTooltip"
 		:empty="!task"
-		:active.sync="activeTab"
 		@start-editing="newTitle = task.summary"
-		@update:titleEditable="editTitle"
+		@update:title-editable="editTitle"
 		@update:title="updateTitle"
 		@submit-title="saveTitle()"
 		@close="closeAppSidebar()">
@@ -725,7 +725,7 @@ export default {
 		subscribe('tasks:open-appsidebar-tab', this.openAppSidebarTab)
 		subscribe('tasks:edit-appsidebar-title', this.editTitle)
 	},
-	beforeDestroy() {
+	beforeUnmount() {
 		unsubscribe('tasks:close-appsidebar', this.closeAppSidebar)
 		unsubscribe('tasks:open-appsidebar-tab', this.openAppSidebarTab)
 		unsubscribe('tasks:edit-appsidebar-title', this.editTitle)
